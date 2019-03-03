@@ -1,0 +1,161 @@
+{% extends 'login_reg/base.html' %} {% block body %}
+<div class="container mt-3">
+    <h1>Bill Tracker</h1>
+    <form action="{% url 'login_reg:save_bill' %}" method="POST" id="create-bill">
+        <div class="form-group row">
+            <div class="col-7 px-0">
+                <input type="text" class="form-control" name="html_description">
+            </div>
+            <div class="col-2 pr-0">
+                <input type="text" class="form-control text-right" name="html_amount">
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success" id="add-bill">Add Bill</button>
+            </div>
+        </div>
+    </form>
+    <div class="row font-weight-bold border-bottom mt-5 mb-3">
+        <div class="col-7">Description</div>
+        <div class="col-2 text-right pr-0">Amount</div>
+    </div>
+
+    <div class="bills">
+
+        <div class="row copy">
+            <div class="col-7 description" contenteditable></div>
+            <div class="col-2 text-right pr-0 amount" contenteditable></div>
+            <div class="col-auto">
+                <button class="btn btn-danger btn-sm delete">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block scripts %}
+
+<script>
+
+    let beforeAjaxSend = function (xhr, settings) {
+        let csrftoken = Cookies.get('csrftoken');
+        if (!this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    };
+
+    $(document).ready(function () {
+
+        function getUpdateBillFn(response, targetDiv) {
+
+            let updateBill = function (event) {
+                $.ajax({
+                    beforeSend: beforeAjaxSend,
+                    type: "POST",
+                    url: response.update_url,
+                    data: { 'description': targetDiv.find('.description').text(), 'amount': targetDiv.find('.amount').text(), },
+                    success: function (response) {
+                        console.log(response);
+                    }
+                });
+            };
+            return updateBill;
+        }
+
+        function getDeleteBillFn(response, targetDiv) {
+            
+            let deleteBill = function (event) {
+                console.log(response.delete_url);
+                $.ajax({
+                    type: "GET",
+                    url: response.delete_url,
+                    success: function (response) {
+                        console.log(response);
+                        targetDiv.remove();
+                    }
+                });
+            };
+
+            return deleteBill;
+        }
+
+        let updateAmount = function (event) {
+            if (event.keyCode == 13) {
+                let amount = Number($(this).text());
+                if (amount) {
+                    $(this).text(amount);
+                } else {
+                    $(this).text(0);
+                }
+                $(this).blur();
+            }
+        }
+
+        let loadBills = function () {
+            $.ajax({
+                type: "GET",
+                url: "{% url 'login_reg:get_bills' %}",
+                success: function (response) {
+                    let bills = JSON.parse(response);
+                    for (let index in bills) {
+                        let bill = bills[index];
+                        let billDiv = $(".copy").clone();
+                        billDiv.find(".description").text(bill.description);
+                        billDiv.find(".amount").text(bill.amount);
+                        $(".bills").append(billDiv);
+                        billDiv.removeClass("copy");
+                        billDiv.find(".description, .amount").blur(getUpdateBillFn(bill, billDiv));
+                        billDiv.find(".btn").click(getDeleteBillFn(bill, billDiv));
+                        billDiv.find(".amount").keypress(updateAmount);
+
+                    }
+                }
+            });
+        }
+        loadBills();
+
+        $("#add-bill").click(function (event) {
+            event.preventDefault();
+            let fields = formToJson("#create-bill");
+            $.ajax({
+                beforeSend: beforeAjaxSend,
+                type: $("#create-bill").attr("method"),
+                url: $("#create-bill").attr("action"),
+                data: fields,
+                success: function (response) {
+                    if (fields.html_description.length > 0 && fields.html_amount.length > 0) {
+                        if (Number(fields.html_amount)) {
+                            let bill = $(".copy").clone();
+                            bill.attr("id", response.bill_id);
+
+                            bill.find(".delete").click(getDeleteBillFn(response, bill));
+
+                            bill.find(".description, .amount").keypress(function (event) {
+                                if (event.keyCode == 13) {
+                                    $(this).blur();
+                                }
+                            });
+
+                            bill.find('.description, .amount').blur(getUpdateBillFn(response, bill));
+
+                            bill.find(".amount").keypress(updateAmount);
+
+                            bill.find(".description").text(fields.html_description);
+                            bill.find(".amount").text(fields.html_amount);
+
+                            bill.removeClass("copy");
+                            bill.appendTo(".bills");
+                        }
+                    }
+
+                    $("#create-bill input").val(null);
+                },
+                error: function (response) {
+                    console.log(response);
+                    let message = response.responseJSON;
+                    console.error(message.error);
+                }
+            });
+
+
+        });
+    });
+
+</script> {% endblock %}

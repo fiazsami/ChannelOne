@@ -1,0 +1,54 @@
+{% extends 'login_reg/base.html' %}
+    
+{% block body %}
+
+    <div class="container">
+        <div class="row">
+            <button class="btn btn-primary mx-2 my-3" id="first">First Button</button>       
+            <button class="btn btn-primary mx-2 my-3" id="second">Second Button</button>       
+            <button class="btn btn-primary mx-2 my-3" id="third">Third Button</button>
+        </div>
+
+        <div class="row">
+            <div class="col-12 box" id="first-div" onclick="clickDiv()"></div>
+            <div class="col-12 box" id="second-div" onmouseover="enterDiv()"></div>
+            <div class="col-12 box" id="third-div"></div>
+        </div>
+    </div>
+{% endblock %}
+    
+{% block scripts %}
+<script>
+
+        
+        $("#first").click(function(event) {
+            $("#first-div").toggle(500);
+            $("#second-div").slideToggle(2000);
+            $("#third-div").slideToggle(500);
+        });
+
+        $("#second").click(function(event) {
+            $("#third-div").slideToggle(500, function() {
+                $("#first-div").fadeToggle(500, function() {
+                    $("#second-div").fadeToggle(500, function() {
+                        console.log("hello world");
+                    });
+                });
+            });
+        });
+        
+
+        $("#third").mouseenter(function(event) {
+            $("#first-div").nextAll().fadeToggle(500);
+        });
+        
+
+        function clickDiv() {
+            $("#first-div").nextAll().fadeToggle(500);
+        }
+
+        function enterDiv() {
+            $("#second-div").siblings().toggleClass("box").toggleClass("green-box");
+        }
+    </script>
+{% endblock %}

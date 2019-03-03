@@ -1,0 +1,90 @@
+-----------------
+    SELECTORS
+-----------------
+
+.children();
+.closest();
+.find();
+.next();
+.nextAll();
+.parent();
+.parents();
+.prev();
+.prevAll();
+.siblings();
+
+---------------
+    EFFECTS
+---------------
+
+.delay(duration);
+.delay(duration), function() {});
+
+.hide(duration);
+.hide(duration, function() {});
+
+.show(duration);
+.show(duration, function() {});
+
+.slideUp(duration);
+.slideUp(duration, function() {});
+
+.slideDown(duration);
+.slideDown(duration, function() {});
+
+.fadeIn(duration);
+.fadeIn(duration, function() {});
+
+.fadeOut(duration);
+.fadeOut(duration, function() {});
+
+.fadeTo(duration);
+.fadeTo(duration, function() {});
+
+.toggle(duration);
+.toggle(duration, function() {});
+
+.fadeToggle(duration);
+.fadeToggle(duration, function() {});
+
+.slideToggle(duration);
+.slideToggle(duration, function() {});
+
+
+-------------------
+    MOUSE EVENTS
+-------------------
+
+.click(function(event) {});
+.dblclick(function(event) {});
+.mouseenter(function(event) {});
+.mouseleave(function(event) {});
+
+-----------------
+    KEY EVENTS
+-----------------
+
+.keypress(function(event) {});
+.keydown(function(event) {});
+.keyup(function(event) {});
+
+
+-------------------
+    FORM EVENTS
+-------------------
+
+.submit(function(event) {});
+.change(function(event) {});
+.focus(function(event) {});
+.blur(function(event) {});
+
+
+
+---------------------
+    WINDOW EVENTS
+---------------------
+
+.load(function(event) {});
+.resize(function(event) {});
+.scroll(function(event) {});
+.unload(function(event) {});
